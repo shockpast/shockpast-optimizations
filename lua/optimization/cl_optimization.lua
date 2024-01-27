@@ -66,8 +66,10 @@ hook.Add("InitPostEntity", "optimization:client[commands]", function()
 end)
 
 hook.Add("InitPostEntity", "optimization:client[unnecessary_hooks]", function()
-  for eventName, identifier in pairs(hooks) do
-    hook.Remove(eventName, identifier)
+  for eventName, nameTbl in pairs(hooks) do
+    for _, identifier in ipairs(nameTbl) do
+      hook.Remove(eventName, identifier)
+    end
   end
 
   hook.Remove("InitPostEntity", "optimization:client[unnecessary_hooks]")
@@ -131,7 +133,7 @@ function entityMeta:IsInRange()
   return pos:DistToSqr(eyePos) < 3000000
 end
 
-hook.Add("InitPostEntity", "optimization:client[gamemode]", function()
+hook.Add("Initialize", "optimization:client[gamemode]", function()
   local GM = GAMEMODE
 
   local CalcMainActivity = GM.CalcMainActivity
