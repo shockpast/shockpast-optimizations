@@ -1,0 +1,23 @@
+{
+  "Lua.workspace.library": [
+    "C:/Users/shockpast/AppData/Roaming/Code - Insiders/User/globalStorage/sumneko.lua/addonManager/addons/garrysmod/module/library"
+  ],
+  "Lua.runtime.version": "LuaJIT",
+  "Lua.runtime.special": {
+    "include": "require",
+    "IncludeCS": "require",
+  },
+  "Lua.runtime.nonstandardSymbol": [
+    "continue",
+    "!=",
+    "||",
+    "//",
+    "/**/"
+  ],
+  "Lua.runtime.unicodeName": true,
+  "Lua.diagnostics.disable": [
+    "duplicate-set-field"
+  ],
+  "Lua.workspace.checkThirdParty": false,
+  "Lua.diagnostics.globals": []
+}

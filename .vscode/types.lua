@@ -1,0 +1,2 @@
+---@class SOptimization
+---@field Log function
