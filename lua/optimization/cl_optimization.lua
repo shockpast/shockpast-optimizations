@@ -113,6 +113,12 @@ hook.Add("RenderScene", "optimization:client[cache_view]", function(origin, angl
   eyeVector = angles:Forward()
 end)
 
+hook.Add("PreRender", "optimization:client[unfocused_render]", function()
+  if not system.HasFocus() then
+    return true
+  end
+end)
+
 local entityMeta = FindMetaTable("Entity")
 
 function entityMeta:IsVisible()
@@ -125,79 +131,73 @@ function entityMeta:IsInRange()
   return pos:DistToSqr(eyePos) < 3000000
 end
 
-hook.Add("InitPostEntity", "optimization:client[gm_fixes]", function()
-  local GM = GAMEMODE
+local GM = GAMEMODE
 
-  local CalcMainActivity = GM.CalcMainActivity
-  function GM:CalcMainActivity(ply, ...)
-    if not ply:IsVisible() then
-      return ply.CalcIdeal, ply.CalcSeqOverride
-    end
-
-    return CalcMainActivity(self, ply, ...)
+local CalcMainActivity = GM.CalcMainActivity
+function GM:CalcMainActivity(ply, ...)
+  if not ply:IsVisible() then
+    return ply.CalcIdeal, ply.CalcSeqOverride
   end
 
-  local UpdateAnimation = GM.UpdateAnimation
-  function GM:UpdateAnimation(ply, ...)
-    if not ply:IsVisible() then return end
+  return CalcMainActivity(self, ply, ...)
+end
 
-    return UpdateAnimation(self, ply, ...)
+local UpdateAnimation = GM.UpdateAnimation
+function GM:UpdateAnimation(ply, ...)
+  if not ply:IsVisible() then return end
+
+  return UpdateAnimation(self, ply, ...)
+end
+
+local PrePlayerDraw = GM.PrePlayerDraw
+function GM:PrePlayerDraw(ply, ...)
+  if not ply:IsVisible() then
+    return true
   end
 
-  local PrePlayerDraw = GM.PrePlayerDraw
-  function GM:PrePlayerDraw(ply, ...)
-    if not ply:IsVisible() then
-      return true
-    end
+  return PrePlayerDraw(self, ply, ...)
+end
 
-    return PrePlayerDraw(self, ply, ...)
+local DoAnimationEvent = GM.DoAnimationEvent
+function GM:DoAnimationEvent(ply, ...)
+  if not ply:IsVisible() then
+    return ply.CalcIdeal
   end
 
-  local DoAnimationEvent = GM.DoAnimationEvent
-  function GM:DoAnimationEvent(ply, ...)
-    if not ply:IsVisible() then
-      return ply.CalcIdeal
-    end
+  return DoAnimationEvent(self, ply, ...)
+end
 
-    return DoAnimationEvent(self, ply, ...)
+local PlayerFootstep = GM.PlayerFootstep
+function GM:PlayerFootstep(ply, ...)
+  if not ply:IsInRange() then
+    return true
   end
 
-  local PlayerFootstep = GM.PlayerFootstep
-  function GM:PlayerFootstep(ply, ...)
-    if not ply:IsInRange() then
-      return true
-    end
+  PlayerFootstep(self, ply, ...)
+end
 
-    PlayerFootstep(self, ply, ...)
+local PlayerStepSoundTime = GM.PlayerStepSoundTime
+function GM:PlayerStepSoundTime(ply, ...)
+  if not ply:IsInRange() then
+    return 350
   end
 
-  local PlayerStepSoundTime = GM.PlayerStepSoundTime
-  function GM:PlayerStepSoundTime(ply, ...)
-    if not ply:IsInRange() then
-      return 350
-    end
+  return PlayerStepSoundTime(self, ply, ...)
+end
 
-    return PlayerStepSoundTime(self, ply, ...)
+local TranslateActivity = GM.TranslateActivity
+function GM:TranslateActivity(ply, ...)
+  if not ply:IsVisible() then
+    return ACT_HL2MP_IDLE
   end
 
-  local TranslateActivity = GM.TranslateActivity
-  function GM:TranslateActivity(ply, ...)
-    if not ply:IsVisible() then
-      return ACT_HL2MP_IDLE
-    end
+  return TranslateActivity(self, ply, ...)
+end
 
-    return TranslateActivity(self, ply, ...)
-  end
-
-  hook.Remove("PostGamemodeLoaded", "optimization:client[gm_fixes]")
-end)
-
-hook.Add("InitPostEntity", "optimization:client[detour_render]", function()
-  render.SupportsHDR = function() return false end
-  render.SupportsPixelShaders_1_4 = function() return false end
-  render.SupportsPixelShaders_2_0 = function() return false end
-  render.SupportsVertexShaders_2_0 = function() return false end
-end)
+render.SupportsHDR = function() return false end
+render.SupportsPixelShaders_1_4 = function() return false end
+render.SupportsPixelShaders_2_0 = function() return false end
+render.SupportsVertexShaders_2_0 = function() return false end
 
 EyeFov = function() return eyeFov end
 EyePos = function() return eyePos end
