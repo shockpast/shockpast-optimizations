@@ -131,68 +131,70 @@ function entityMeta:IsInRange()
   return pos:DistToSqr(eyePos) < 3000000
 end
 
-local GM = GAMEMODE
+hook.Add("InitPostEntity", "optimization:client[gamemode]", function()
+  local GM = GAMEMODE
 
-local CalcMainActivity = GM.CalcMainActivity
-function GM:CalcMainActivity(ply, ...)
-  if not ply:IsVisible() then
-    return ply.CalcIdeal, ply.CalcSeqOverride
+  local CalcMainActivity = GM.CalcMainActivity
+  function GM:CalcMainActivity(ply, ...)
+    if not ply:IsVisible() then
+      return ply.CalcIdeal, ply.CalcSeqOverride
+    end
+
+    return CalcMainActivity(self, ply, ...)
   end
 
-  return CalcMainActivity(self, ply, ...)
-end
+  local UpdateAnimation = GM.UpdateAnimation
+  function GM:UpdateAnimation(ply, ...)
+    if not ply:IsVisible() then return end
 
-local UpdateAnimation = GM.UpdateAnimation
-function GM:UpdateAnimation(ply, ...)
-  if not ply:IsVisible() then return end
-
-  return UpdateAnimation(self, ply, ...)
-end
-
-local PrePlayerDraw = GM.PrePlayerDraw
-function GM:PrePlayerDraw(ply, ...)
-  if not ply:IsVisible() then
-    return true
+    return UpdateAnimation(self, ply, ...)
   end
 
-  return PrePlayerDraw(self, ply, ...)
-end
+  local PrePlayerDraw = GM.PrePlayerDraw
+  function GM:PrePlayerDraw(ply, ...)
+    if not ply:IsVisible() then
+      return true
+    end
 
-local DoAnimationEvent = GM.DoAnimationEvent
-function GM:DoAnimationEvent(ply, ...)
-  if not ply:IsVisible() then
-    return ply.CalcIdeal
+    return PrePlayerDraw(self, ply, ...)
   end
 
-  return DoAnimationEvent(self, ply, ...)
-end
+  local DoAnimationEvent = GM.DoAnimationEvent
+  function GM:DoAnimationEvent(ply, ...)
+    if not ply:IsVisible() then
+      return ply.CalcIdeal
+    end
 
-local PlayerFootstep = GM.PlayerFootstep
-function GM:PlayerFootstep(ply, ...)
-  if not ply:IsInRange() then
-    return true
+    return DoAnimationEvent(self, ply, ...)
   end
 
-  PlayerFootstep(self, ply, ...)
-end
+  local PlayerFootstep = GM.PlayerFootstep
+  function GM:PlayerFootstep(ply, ...)
+    if not ply:IsInRange() then
+      return true
+    end
 
-local PlayerStepSoundTime = GM.PlayerStepSoundTime
-function GM:PlayerStepSoundTime(ply, ...)
-  if not ply:IsInRange() then
-    return 350
+    PlayerFootstep(self, ply, ...)
   end
 
-  return PlayerStepSoundTime(self, ply, ...)
-end
+  local PlayerStepSoundTime = GM.PlayerStepSoundTime
+  function GM:PlayerStepSoundTime(ply, ...)
+    if not ply:IsInRange() then
+      return 350
+    end
 
-local TranslateActivity = GM.TranslateActivity
-function GM:TranslateActivity(ply, ...)
-  if not ply:IsVisible() then
-    return ACT_HL2MP_IDLE
+    return PlayerStepSoundTime(self, ply, ...)
   end
 
-  return TranslateActivity(self, ply, ...)
-end
+  local TranslateActivity = GM.TranslateActivity
+  function GM:TranslateActivity(ply, ...)
+    if not ply:IsVisible() then
+      return ACT_HL2MP_IDLE
+    end
+
+    return TranslateActivity(self, ply, ...)
+  end
+end)
 
 render.SupportsHDR = function() return false end
 render.SupportsPixelShaders_1_4 = function() return false end
