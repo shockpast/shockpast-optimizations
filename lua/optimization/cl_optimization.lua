@@ -62,7 +62,7 @@ hook.Add("InitPostEntity", "optimization:client[commands]", function()
     end
   end
 
-  hook.Remove("PreGamemodeLoaded", "optimization:client[commands]")
+  hook.Remove("InitPostEntity", "optimization:client[commands]")
 end)
 
 hook.Add("InitPostEntity", "optimization:client[unnecessary_hooks]", function()
